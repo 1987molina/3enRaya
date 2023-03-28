@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del tres en Raya</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="contenedor">
+        <div class="titulo" id="titulo">
+                <h4>3 en Raya</h4>
+        </div>
+        <div class="col" id="arribaIzquierda" onclick="colocarFichaJugador(this)">
+                
+        </div>
+        <div class="col" id="arribaCentro" onclick="colocarFichaJugador(this)">
+                
+        </div>
+        <div class="col" id="arribaDerecha" onclick="colocarFichaJugador(this)">
+
+        </div>
+        <div class="col" id="centroIzquierda" onclick="colocarFichaJugador(this)">
+
+        </div>
+        <div class="col" id="centroCentro" onclick="colocarFichaJugador(this)">
+            
+        </div>
+        <div class="col" id="centroDerecha" onclick="colocarFichaJugador(this)">
+
+        </div>
+        <div class="col" id="abajoIzquierda"onclick="colocarFichaJugador(this)">
+
+        </div>
+        <div class="col" id="abajoCentro" onclick="colocarFichaJugador(this)">
+
+        </div>
+        <div class="col" id="abajoDerecha" onclick="colocarFichaJugador(this)">
+
+        </div>
+        <div class="mensajes">
+            <b>Mensajes Juego</b>
+            <p id="mensajes"></p>
+        </div>
+        <div class="botones">
+            <button type="button" class="boton" onclick="window.location.reload()">Reiniciar Partida</button>
+        </div>
+    </div>
+    <div class="eleccionInicio activo" id="eleccionInicio">
+            <div class="tituloVentana">
+            <h3 class="titulo">¿Quien va a comenzar la partida?</h3>
+        </div>
+        <div class="botones">
+            <button type="button" class="boton" id="inicioJugador">Jugador</button>
+            <button type="button" class="boton" id="inicioMaquina">Máquina</button>
+        </div>
+    </div>
+    <div class="fondo-eleccionInicio activo" id="fondo-eleccionInicio"></div>
+    <script>
+
+        //calculo del tamaño de pantalla para centrar las ventanas emergentes.
+
+        var ancho = window.innerWidth/2;
+        var alto = window.innerHeight/2;
+
+        var fichaJugador = "X";
+        var fichaMaquina = "O";
+        var jugadaMaquina = false;
+        var ganaJugador = false;
+        var ganaMaquina = false;
+        var tableroLleno = false;
+
+        const botonInicioJugador = document.getElementById("inicioJugador");
+        const botonIniciaMaquina = document.getElementById("inicioMaquina");
+        const eleccionInicio = document.getElementById("eleccionInicio");
+        const fondoEleccionInicio = document.getElementById("fondo-eleccionInicio");
+
+        botonInicioJugador.addEventListener('click',()=>{
+            document.getElementById("mensajes").innerHTML = "Jugador es tu turno";
+            jugadaMaquina = true;
+            eleccionInicio.classList.remove('activo');
+            fondoEleccionInicio.classList.remove('activo');
+
+        })
+        botonIniciaMaquina.addEventListener('click', () =>{
+            colocarFichaMaquina();
+            eleccionInicio.classList.remove('activo');
+            fondoEleccionInicio.classList.remove('activo');
+        })
+    
+    
+        // Colocacion ficha jugador
+
+        function colocarFichaJugador(casilla){
+            if (!ganaMaquina && !tableroLleno && jugadaMaquina) {
+                jugadaMaquina = false;
+                if (casilla.innerText) {
+                    document.getElementById("mensajes").innerHTML = "Casilla ocupa selecciona otra";
+            
+                }else{
+                    casilla.style.color = "red";
+                    casilla.innerHTML = fichaJugador;
+                    setTimeout(comprobar,1000);
+                    tableroCompleto();
+                    if (!tableroLleno && !ganaJugador) {
+                    document.getElementById("mensajes").innerHTML = "Turno de la Maquina";
+                    setTimeout(colocarFichaMaquina, 5000);
+                    }
+                }
+                
+            }else if(!jugadaMaquina){
+                document.getElementById("mensajes").innerHTML= "Espera tu turno"
+            }else{
+                document.getElementById("mensajes").innerHTML= "No se pueden realizar más movimientos"
+            }
+        }
+            // turno maquina
+            function colocarFichaMaquina(){
+            while (!jugadaMaquina && !ganaJugador && !ganaMaquina && !tableroLleno) {
+                
+                //si el tablero esta vacio porque empieza la maquina colocar en cualquier esquina aleatoriamente.
+                if (!document.getElementById("arribaIzquierda").innerText && !document.getElementById("arribaCentro").innerText && !document.getElementById("arribaDerecha").innerText  && !document.getElementById("centroIzquierda").innerText  && !document.getElementById("centroCentro").innerText && !document.getElementById("centroDerecha").innerText  && !document.getElementById("abajoIzquierda").innerText && !document.getElementById("abajoCentro").innerText && !document.getElementById("abajoDerecha").innerText) {
+                    var opcion = Math.floor(Math.random()*4+1);
+                    switch(opcion){
+                        case 1:
+                            document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                            jugadaMaquina = true;
+                            break;
+                        case 2:
+                            document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                            jugadaMaquina = true;
+                            break;
+                        case 3:
+                            document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                            jugadaMaquina = true;
+                            break;
+                        case 4:
+                            document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                            jugadaMaquina = true;
+                            break;
+                    }
+                    break;
+                }
+
+                // comprabacion si maquina puede hacer 3 en raya
+                if ((document.getElementById("arribaCentro").innerText =="O" && document.getElementById("arribaDerecha").innerText =="O" || document.getElementById("centroIzquierda").innerText =="O" && document.getElementById("abajoIzquierda").innerText =="O") && !document.getElementById("arribaIzquierda").innerText){
+                    document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if((document.getElementById("arribaIzquierda").innerText =="O" && document.getElementById("arribaDerecha").innerText =="O" || document.getElementById("centroCentro").innerText =="O" && document.getElementById("abajoCentro").innerText =="O") && !document.getElementById("arribaCentro").innerText){
+                    document.getElementById("arribaCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaCentro").innerText =="O" && document.getElementById("arribaIzquierda").innerText =="O" || document.getElementById("centroDerecha").innerText =="O" && document.getElementById("abajoDerecha").innerText =="O") && !document.getElementById("arribaDerecha").innerText){
+                    document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaIzquierda").innerText =="O" && document.getElementById("abajoIzquierda").innerText =="O" || document.getElementById("centroCentro").innerText =="O" && document.getElementById("centroDerecha").innerText =="O") && !document.getElementById("centroIzquierda").innerText){
+                    document.getElementById("centroIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if((document.getElementById("arribaCentro").innerText =="O" && document.getElementById("abajoCentro").innerText =="O" || document.getElementById("centroIzquierda").innerText =="O" && document.getElementById("centroDerecha").innerText =="O") && !document.getElementById("centroCentro").innerText){
+                    document.getElementById("centroCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaDerecha").innerText =="O" && document.getElementById("abajoDerecha").innerText =="O" || document.getElementById("centroIzquierda").innerText =="O" && document.getElementById("centroCentro").innerText =="O") && !document.getElementById("centroDerecha").innerText){
+                    document.getElementById("centroDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaIzquierda").innerText =="O" && document.getElementById("centroIzquierda").innerText =="O" || document.getElementById("abajoCentro").innerText =="O" && document.getElementById("abajoDerecha").innerText =="O") && !document.getElementById("abajoIzquierda").innerText){
+                    document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if((document.getElementById("arribaCentro").innerText =="O" && document.getElementById("centroCentro").innerText =="O" || document.getElementById("abajoIzquierda").innerText =="O" && document.getElementById("abajoDerecha").innerText =="O") && !document.getElementById("abajoCentro").innerText){
+                    document.getElementById("abajoCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaDerecha").innerText =="O" && document.getElementById("centroDerecha").innerText =="O" || document.getElementById("abajoIzquierda").innerText =="O" && document.getElementById("abajoCentro").innerText =="O") && !document.getElementById("abajoDerecha").innerText){
+                    document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("arribaIzquierda").innerText =="O" && document.getElementById("centroCentro").innerText =="O" && !document.getElementById("abajoDerecha").innerText){
+                    document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if(document.getElementById("arribaDerecha").innerText =="O" && document.getElementById("centroCentro").innerText =="O" && !document.getElementById("abajoIzquierda").innerText){
+                    document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("arribaIzquierda").innerText =="O" && document.getElementById("abajoDerecha").innerText =="O" && !document.getElementById("centroCentro").innerText){
+                    document.getElementById("centroCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("arribaDerecha").innerText =="O" && document.getElementById("abajoIzquierda").innerText =="O" && !document.getElementById("centroCentro").innerText){
+                    document.getElementById("centroCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if(document.getElementById("centroCentro").innerText =="O" && document.getElementById("abajoDerecha").innerText =="O" && !document.getElementById("arribaIzquierda").innerText){
+                    document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("centroCentro").innerText =="O" && document.getElementById("abajoIzquierda").innerText =="O" && !document.getElementById("arribaDerecha").innerText){
+                    document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }
+                //comprobacion si jugador puede hacer 3 en raya
+                else if ((document.getElementById("arribaCentro").innerText =="X" && document.getElementById("arribaDerecha").innerText =="X" || document.getElementById("centroIzquierda").innerText =="X" && document.getElementById("abajoIzquierda").innerText =="X") && !document.getElementById("arribaIzquierda").innerText){
+                    document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if((document.getElementById("arribaIzquierda").innerText =="X" && document.getElementById("arribaDerecha").innerText =="X" || document.getElementById("centroCentro").innerText =="X" && document.getElementById("abajoCentro").innerText =="X") && !document.getElementById("arribaCentro").innerText){
+                    document.getElementById("arribaCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaCentro").innerText =="X" && document.getElementById("arribaIzquierda").innerText =="X" || document.getElementById("centroDerecha").innerText =="X" && document.getElementById("abajoDerecha").innerText =="X") && !document.getElementById("arribaDerecha").innerText){
+                    document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaIzquierda").innerText =="X" && document.getElementById("abajoIzquierda").innerText =="X" || document.getElementById("centroCentro").innerText =="X" && document.getElementById("centroDerecha").innerText =="X") && !document.getElementById("centroIzquierda").innerText){
+                    document.getElementById("centroIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if((document.getElementById("arribaCentro").innerText =="X" && document.getElementById("abajoCentro").innerText =="X" || document.getElementById("centroIzquierda").innerText =="X" && document.getElementById("centroDerecha").innerText =="X") && !document.getElementById("centroCentro").innerText){
+                    document.getElementById("centroCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaDerecha").innerText =="X" && document.getElementById("abajoDerecha").innerText =="X" || document.getElementById("centroIzquierda").innerText =="X" && document.getElementById("centroCentro").innerText =="X") && !document.getElementById("centroDerecha").innerText){
+                    document.getElementById("centroDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaIzquierda").innerText =="X" && document.getElementById("centroIzquierda").innerText =="X" || document.getElementById("abajoCentro").innerText =="X" && document.getElementById("abajoDerecha").innerText =="X") && !document.getElementById("abajoIzquierda").innerText){
+                    document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if((document.getElementById("arribaCentro").innerText =="X" && document.getElementById("centroCentro").innerText =="X" || document.getElementById("abajoIzquierda").innerText =="X" && document.getElementById("abajoDerecha").innerText =="X") && !document.getElementById("abajoCentro").innerText){
+                    document.getElementById("abajoCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if ((document.getElementById("arribaDerecha").innerText =="X" && document.getElementById("centroDerecha").innerText =="X" || document.getElementById("abajoIzquierda").innerText =="X" && document.getElementById("abajoCentro").innerText =="X") && !document.getElementById("abajoDerecha").innerText){
+                    document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("arribaIzquierda").innerText =="X" && document.getElementById("centroCentro").innerText =="X" && !document.getElementById("abajoDerecha").innerText){
+                    document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if(document.getElementById("arribaDerecha").innerText =="X" && document.getElementById("centroCentro").innerText =="X" && !document.getElementById("abajoIzquierda").innerText){
+                    document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("arribaIzquierda").innerText =="X" && document.getElementById("abajoDerecha").innerText =="X" && !document.getElementById("centroCentro").innerText){
+                    document.getElementById("centroCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("arribaDerecha").innerText =="X" && document.getElementById("abajoIzquierda").innerText =="X" && !document.getElementById("centroCentro").innerText){
+                    document.getElementById("centroCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if(document.getElementById("centroCentro").innerText =="X" && document.getElementById("abajoDerecha").innerText =="X" && !document.getElementById("arribaIzquierda").innerText){
+                    document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("centroCentro").innerText =="X" && document.getElementById("abajoIzquierda").innerText =="X" && !document.getElementById("arribaDerecha").innerText){
+                    document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+
+                    // Si el jugador coloca en una esquina y es su primer movimiento, maquina coloca al centro.
+
+                }else if ((document.getElementById("arribaIzquierda").innerText =="X" || document.getElementById("arribaDerecha").innerText =="X" || document.getElementById("abajoIzquierda").innerText =="X" || document.getElementById("abajoDerecha").innerText =="X") && !document.getElementById("centroCentro").innerText && !document.getElementById("arribaCentro").innerText && !document.getElementById("abajoCentro").innerText && !document.getElementById("centroIzquierda").innerText && !document.getElementById("centroDerecha").innerText){
+                    document.getElementById("centroCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+
+                    //Si el jugador coloca en el centro de los laterales y es su primer movimiento
+
+                }else if ((document.getElementById("centroIzquierda").innerText =="X" || document.getElementById("centroDerecha").innerText =="X" || document.getElementById("abajoCentro").innerText =="X" || document.getElementById("arribaCentro").innerText =="X") && !document.getElementById("centroCentro").innerText && !document.getElementById("arribaIzquierda").innerText && !document.getElementById("abajoIzquierda").innerText && !document.getElementById("arribaDerecha").innerText && !document.getElementById("abajoDerecha").innerText){
+                    document.getElementById("centroCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+
+                    //Si el jugador coloca en una esquina y el centro esta ocupado por la maquina.
+
+                }else if (document.getElementById("arribaIzquierda").innerText =="X" && document.getElementById("centroCentro").innerText =="O" ){
+                    if (document.getElementById("centroDerecha").innerText == "X" && !document.getElementById("arribaCentro").innerText && !document.getElementById("abajoCentro").innerText) {
+                        document.getElementById("arribaCentro").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if (document.getElementById("abajoCentro").innerText == "X" && !document.getElementById("centroIzquierda").innerText && !document.getElementById("centroDerecha").innerText) {
+                        document.getElementById("centroIzquierda").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if(!document.getElementById("abajoDerecha").innerText){
+                        document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if (document.getElementById("abajoDerecha").innerText == "X") {
+                        document.getElementById("centroIzquierda").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }
+                    
+                }else if (document.getElementById("arribaDerecha").innerText =="X" && document.getElementById("centroCentro").innerText =="O"){
+                    if (document.getElementById("centroIzquierda").innerText == "X" && !document.getElementById("arribaCentro").innerText && !document.getElementById("abajoCentro").innerText) {
+                        document.getElementById("arribaCentro").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if (document.getElementById("abajoCentro").innerText == "X" && !document.getElementById("centroDerecha").innerText && !document.getElementById("centroIzquierda").innerText) {
+                        document.getElementById("centroDerecha").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if (!document.getElementById("abajoIzquierda").innerText) {
+                        document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if (document.getElementById("abajoIzquierda").innerText == "X") {
+                        document.getElementById("centroDerecha").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }
+               
+                }else if (document.getElementById("abajoIzquierda").innerText =="X" && document.getElementById("centroCentro").innerText =="O"){
+                    if (document.getElementById("arribaCentro").innerText == "X" && !document.getElementById("centroIzquierda").innerText && !document.getElementById("centroDerecha").innerText) {
+                        document.getElementById("centroIzquierda").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if (document.getElementById("centroDerecha").innerText == "X" && !document.getElementById("abajoCentro").innerText && !document.getElementById("arribaCentro").innerText) {
+                        document.getElementById("abajoCentro").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if(!document.getElementById("arribaDerecha").innerText){
+                        document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }
+                
+                }else if (document.getElementById("abajoDerecha").innerText =="X" && document.getElementById("centroCentro").innerText =="O"){
+                    if (document.getElementById("arribaCentro").innerText == "X" && !document.getElementById("centroDerecha").innerText && !document.getElementById("centroIzquierda").innerText) {
+                        document.getElementById("centroDerecha").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if (document.getElementById("centroIzquierda").innerText == "X" && !document.getElementById("abajoCentro").innerText && !document.getElementById("arribaCentro").innerText) {
+                        document.getElementById("abajoCentro").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }else if (!document.getElementById("arribaIzquierda").inner){
+                        document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                        jugadaMaquina = true;
+                        break;
+                    }
+
+                    // Si la maquina coloca en la esquina y el jugador deja el centro libre
+
+                }else if (document.getElementById("arribaIzquierda").innerText =="O" && !document.getElementById("centroCentro").innerText && !document.getElementById("arribaCentro").innerText && !document.getElementById("arribaDerecha").innerText){
+                    document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("arribaIzquierda").innerText =="O" && !document.getElementById("centroCentro").innerText && !document.getElementById("centroIzquierda").innerText && !document.getElementById("abajoIzquierda").innerText){
+                    document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("arribaDerecha").innerText =="O" && !document.getElementById("centroCentro").innerText && !document.getElementById("arribaCentro").innerText && !document.getElementById("arribaIzquierda").innerText){
+                    document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("arribaDerecha").innerText =="O" && !document.getElementById("centroCentro").innerText && !document.getElementById("centroDerecha").innerText && !document.getElementById("abajoDerecha").innerText){
+                    document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("abajoIzquierda").innerText =="O" && !document.getElementById("centroCentro").innerText && !document.getElementById("abajoCentro").innerText && !document.getElementById("abajoDerecha").innerText){
+                    document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("abajoIzquierda").innerText =="O" && !document.getElementById("centroCentro").innerText && !document.getElementById("centroIzquierda").innerText && !document.getElementById("arribaIzquierda").innerText){
+                    document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("abajoDerecha").innerText =="O" && !document.getElementById("centroCentro").innerText && !document.getElementById("abajoCentro").innerText && !document.getElementById("abajoIzquierda").innerText){
+                    document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (document.getElementById("abajoDerecha").innerText =="O" && !document.getElementById("centroCentro").innerText && !document.getElementById("centroDerecha").innerText && !document.getElementById("arribaDerecha").innerText){
+                    document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+
+                    // Si el jugador coloca en el centro 
+
+                }else if (document.getElementById("centroCentro").innerText && !document.getElementById("arribaIzquierda").innerText && !document.getElementById("arribaDerecha").innerText && !document.getElementById("abajoIzquierda").innerText && !document.getElementById("abajoDerecha").innerText) {
+                    while (!jugadaMaquina) {
+                        var opcion = Math.floor(Math.random()*4+1);
+                    switch(opcion){
+                        case 1:
+                            if(!document.getElementById("arribaIzquierda").innerText){
+                            document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                            jugadaMaquina = true;
+                            }
+                            break;
+                        case 2:
+                        if(!document.getElementById("arribaDerecha").innerText){
+                            document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                            jugadaMaquina = true;
+                            }
+                            break;
+                        case 3:
+                        if(!document.getElementById("abajoIzquierda").innerText){
+                            document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                            jugadaMaquina = true;
+                            }
+                            break;
+                        case 4:
+                        if(!document.getElementById("abajoDerecha").innerText){
+                            document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                            jugadaMaquina = true;
+                            }
+                            break;
+                    }  
+                    }
+
+                    // Cuando queden huecos muertos coloca en uno libre
+
+                }else if (!document.getElementById("arribaIzquierda").innerText && !document.getElementById("centroDerecha").innerText) {
+                    document.getElementById("arribaIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (!document.getElementById("arribaCentro").innerText) {
+                    document.getElementById("arribaCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (!document.getElementById("arribaDerecha").innerText) {
+                    document.getElementById("arribaDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (!document.getElementById("centroIzquierda").innerText) {
+                    document.getElementById("centroIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (!document.getElementById("centroDerecha").innerText) {
+                    document.getElementById("centroDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (!document.getElementById("abajoIzquierda").innerText) {
+                    document.getElementById("abajoIzquierda").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (!document.getElementById("abajoCentro").innerText) {
+                    document.getElementById("abajoCentro").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }else if (!document.getElementById("abajoDerecha").innerText) {
+                    document.getElementById("abajoDerecha").innerHTML = fichaMaquina;
+                    jugadaMaquina = true;
+                    break;
+                }
+            }
+            setTimeout(comprobar,500);
+            tableroCompleto();
+            if (!tableroLleno && !ganaMaquina) {
+                setTimeout(comprobar,500);
+                tableroCompleto();
+                document.getElementById("mensajes").innerHTML = "Jugador es tu turno";   
+            }
+        }
+
+        // Comprobacion si estan todos los huecos rellenos.
+
+        function tableroCompleto(){
+            if (document.getElementById("arribaIzquierda").innerText && document.getElementById("arribaCentro").innerText && document.getElementById("arribaDerecha").innerText  && document.getElementById("centroIzquierda").innerText  && document.getElementById("centroCentro").innerText && document.getElementById("centroDerecha").innerText  && document.getElementById("abajoIzquierda").innerText && document.getElementById("abajoCentro").innerText && document.getElementById("abajoDerecha").innerText) {
+                    document.getElementById("mensajes").innerHTML = "Fin de partida";
+                    tableroLleno = true;
+                }
+        }
+
+        // Comprobacion si alguno a ganado la partida.
+
+        function comprobar(){
+            if (document.getElementById("arribaIzquierda").innerText== "X" && document.getElementById("arribaCentro").innerText == "X" && document.getElementById("arribaDerecha").innerText == "X") {
+                document.getElementById("mensajes").innerHTML = "Gana Jugador";
+                alert("Ganaste");
+                ganaJugador = true;
+
+            }else if (document.getElementById("centroIzquierda").innerText== "X" && document.getElementById("centroCentro").innerText == "X" && document.getElementById("centroDerecha").innerText == "X") {
+                document.getElementById("mensajes").innerHTML = "Gana Jugador";
+                alert("Ganaste");
+                ganaJugador = true;
+
+            }else if (document.getElementById("abajoIzquierda").innerText== "X" && document.getElementById("abajoCentro").innerText == "X" && document.getElementById("abajoDerecha").innerText == "X") {
+                document.getElementById("mensajes").innerHTML = "Gana Jugador";
+                alert("Ganaste");
+                ganaJugador = true;
+
+            }else if (document.getElementById("arribaIzquierda").innerText== "X" && document.getElementById("centroIzquierda").innerText == "X" && document.getElementById("abajoIzquierda").innerText == "X") {
+                document.getElementById("mensajes").innerHTML = "Gana Jugador";
+                alert("Ganaste");
+                ganaJugador = true;
+
+            }else if (document.getElementById("arribaCentro").innerText== "X" && document.getElementById("centroCentro").innerText == "X" && document.getElementById("abajoCentro").innerText == "X") {
+                document.getElementById("mensajes").innerHTML = "Gana Jugador";
+                alert("Ganaste");
+                ganaJugador = true;
+
+            }else if (document.getElementById("arribaDerecha").innerText== "X" && document.getElementById("centroDerecha").innerText == "X" && document.getElementById("abajoDerecha").innerText == "X") {
+                document.getElementById("mensajes").innerHTML = "Gana Jugador";
+                alert("Ganaste");
+                ganaJugador = true;
+
+            }else if (document.getElementById("arribaIzquierda").innerText== "X" && document.getElementById("centroCentro").innerText == "X" && document.getElementById("abajoDerecha").innerText == "X") {
+                document.getElementById("mensajes").innerHTML = "Gana Jugador";
+                alert("Ganaste");
+                ganaJugador = true;
+
+            }else if (document.getElementById("arribaDerecha").innerText== "X" && document.getElementById("centroCentro").innerText == "X" && document.getElementById("abajoIzquierda").innerText == "X") {
+                document.getElementById("mensajes").innerHTML = "Gana Jugador";
+                alert("Ganaste");
+                ganaJugador = true;
+
+            }else  if (document.getElementById("arribaIzquierda").innerText== "O" && document.getElementById("arribaCentro").innerText == "O" && document.getElementById("arribaDerecha").innerText == "O") {
+                document.getElementById("mensajes").innerHTML = "Gana Maquina";
+                alert("Perdiste");
+                ganaMaquina = true;
+                      
+            }else if (document.getElementById("centroIzquierda").innerText== "O" && document.getElementById("centroCentro").innerText == "O" && document.getElementById("centroDerecha").innerText == "O") {
+                document.getElementById("mensajes").innerHTML = "Gana Maquina";
+                alert("Perdiste");
+                ganaMaquina = true;
+
+            }else if (document.getElementById("abajoIzquierda").innerText== "O" && document.getElementById("abajoCentro").innerText == "O" && document.getElementById("abajoDerecha").innerText == "O") {
+                document.getElementById("mensajes").innerHTML = "Gana Maquina";
+                alert("Perdiste");
+                ganaMaquina = true;
+
+            }else if (document.getElementById("arribaIzquierda").innerText== "O" && document.getElementById("centroIzquierda").innerText == "O" && document.getElementById("abajoIzquierda").innerText == "O") {
+                document.getElementById("mensajes").innerHTML = "Gana Maquina";
+                alert("Perdiste");
+                ganaMaquina = true;
+
+            }else if (document.getElementById("arribaCentro").innerText== "O" && document.getElementById("centroCentro").innerText == "O" && document.getElementById("abajoCentro").innerText == "O") {
+                document.getElementById("mensajes").innerHTML = "Gana Maquina";
+                alert("Perdiste");
+                ganaMaquina = true;
+
+            }else if (document.getElementById("arribaDerecha").innerText== "O" && document.getElementById("centroDerecha").innerText == "O" && document.getElementById("abajoDerecha").innerText == "O") {
+                document.getElementById("mensajes").innerHTML = "Gana Maquina";
+                alert("Perdiste");
+                ganaMaquina = true;
+
+            }else if (document.getElementById("arribaIzquierda").innerText== "O" && document.getElementById("centroCentro").innerText == "O" && document.getElementById("abajoDerecha").innerText == "O") {
+                document.getElementById("mensajes").innerHTML = "Gana Maquina";
+                alert("Perdiste");
+                ganaMaquina = true;
+
+            }else if (document.getElementById("arribaDerecha").innerText== "O" && document.getElementById("centroCentro").innerText == "O" && document.getElementById("abajoIzquierda").innerText == "O") {
+                document.getElementById("mensajes").innerHTML = "Gana Maquina";
+                alert("Perdiste");
+                ganaMaquina = true;
+
+            }
+        }
+    </script>
+</body>
+</html>
